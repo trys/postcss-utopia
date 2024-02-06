@@ -90,7 +90,7 @@ Pass in any [utopia-core](https://github.com/trys/utopia-core) configuration and
 
   --space-2xs-xs: clamp(...); etc.
 
-  --space-s-k: clamp(...); etc.
+  --space-s-l: clamp(...); etc.
   */
 }
 ```

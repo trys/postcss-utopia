@@ -1,14 +1,16 @@
 {
   "name": "postcss-utopia",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "PostCSS plugin to generate fluid typopgraphy and space scales",
   "keywords": [
     "postcss",
     "css",
     "postcss-plugin",
-    "postcss-utopia"
+    "postcss-utopia",
+    "utopia"
   ],
   "scripts": {
+    "prepublishOnly": "npm run test",
     "test": "jest --coverage && eslint .",
     "test-css": "postcss -o dist/main.css test/index.css"
   },
@@ -22,7 +24,7 @@
   },
   "dependencies": {
     "postcss-value-parser": "^4.2.0",
-    "utopia-core": "^1.2.0"
+    "utopia-core": "^1.3.0"
   },
   "devDependencies": {
     "clean-publish": "^3.4.2",
