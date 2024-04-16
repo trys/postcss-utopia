@@ -23,7 +23,8 @@ module.exports = (opts) => {
       positiveSteps: 0,
       negativeSteps: 0,
       relativeTo: 'viewport',
-      prefix: 'step'
+      prefix: 'step',
+      label: 'utopia'
     };
     const paramKeys = Object.keys(typeParams);
 
@@ -50,7 +51,8 @@ module.exports = (opts) => {
 
     typeScale.find(step => {
       if (step.wcagViolation) {
-        result.warn(
+        atRule.warn(
+          result,
           `WCAG SC 1.4.4 violation for viewports ${step.wcagViolation.from}px to ${step.wcagViolation.to}px.`
         );
         return true;
