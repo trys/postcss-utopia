@@ -24,7 +24,6 @@ module.exports = (opts) => {
       negativeSteps: 0,
       relativeTo: 'viewport',
       prefix: 'step',
-      label: 'utopia'
     };
     const paramKeys = Object.keys(typeParams);
 
