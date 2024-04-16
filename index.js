@@ -39,7 +39,7 @@ module.exports = (opts) => {
       if (!key || value === undefined) continue;
 
       if (paramKeys.includes(key)) {
-        typeParams[key] = value.value;
+        typeParams[key] = isNaN(typeParams[key]) ? value.value : Number(value.value);
       }
     }
 
@@ -50,8 +50,7 @@ module.exports = (opts) => {
 
     typeScale.find(step => {
       if (step.wcagViolation) {
-        atRule.warn(
-          result,
+        result.warn(
           `WCAG SC 1.4.4 violation for viewports ${step.wcagViolation.from}px to ${step.wcagViolation.to}px.`
         );
         return true;
