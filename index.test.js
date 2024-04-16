@@ -2,10 +2,10 @@ const postcss = require('postcss')
 
 const plugin = require('./')
 
-async function run (input, output, opts = { }) {
+async function run (input, output, opts = { }, expectedWarnings = 0) {
   let result = await postcss([plugin(opts)]).process(input, { from: undefined })
   expect(result.css).toEqual(output)
-  expect(result.warnings()).toHaveLength(0)
+  expect(result.warnings()).toHaveLength(expectedWarnings)
 }
 
 // Type
@@ -83,6 +83,24 @@ it('generates nothing with empty config', async () => {
     `:root { @utopia typeScale(); }`,
     `:root { }`,
     { minWidth: 320, maxWidth: 1240 }
+  )
+})
+
+it('generates a type scale which violates WCAG SC 1.4.4', async () => {
+  await run(
+    `:root { @utopia typeScale({
+        minWidth: 320,
+        maxWidth: 1240,
+        minFontSize: 16,
+        maxFontSize: 48,
+        minTypeScale: 1.2,
+        maxTypeScale: 1.25,
+        positiveSteps: 5,
+        negativeSteps: 2,
+      }); }`,
+      `:root {--step-5: clamp(2.4883rem, 0.1694rem + 11.5947vi, 9.1553rem);--step-4: clamp(2.0736rem, 0.2473rem + 9.1315vi, 7.3242rem);--step-3: clamp(1.728rem, 0.291rem + 7.185vi, 5.8594rem);--step-2: clamp(1.44rem, 0.3104rem + 5.6478vi, 4.6875rem);--step-1: clamp(1.2rem, 0.313rem + 4.4348vi, 3.75rem);--step-0: clamp(1rem, 0.3043rem + 3.4783vi, 3rem);--step--1: clamp(0.8333rem, 0.2884rem + 2.7246vi, 2.4rem);--step--2: clamp(0.6944rem, 0.2682rem + 2.1314vi, 1.92rem); }`,
+      {},
+      1,
   )
 })
 
