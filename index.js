@@ -9,10 +9,10 @@ module.exports = (opts) => {
   const DEFAULTS = { minWidth: 320, maxWidth: 1240, minFontSize: 16, maxFontSize: 20 }
   const config = Object.assign(DEFAULTS, opts)
 
-  const typeScale = (atRule) => {
+  const typeScale = (atRule, result) => {
     const { nodes } = CSSValueParser(atRule.params);
     const params = nodes[0].nodes.filter(x => ['word', 'string'].includes(x.type) && x.value !== '{' && x.value !== '}');
-  
+
     const typeParams = {
       minWidth: config.minWidth,
       maxWidth: config.maxWidth,
@@ -23,7 +23,7 @@ module.exports = (opts) => {
       positiveSteps: 0,
       negativeSteps: 0,
       relativeTo: 'viewport',
-      prefix: 'step'
+      prefix: 'step',
     };
     const paramKeys = Object.keys(typeParams);
 
@@ -31,25 +31,36 @@ module.exports = (opts) => {
       atRule.remove();
       return false;
     }
-  
+
     for (let index = 0; index < params.length; index = index + 2) {
       const element = params[index];
       const key = element.value;
       const value = params[index + 1];
       if (!key || value === undefined) continue;
-  
+
       if (paramKeys.includes(key)) {
-        typeParams[key] = value.value;
+        typeParams[key] = isNaN(typeParams[key]) ? value.value : Number(value.value);
       }
     }
-  
+
     const typeScale = calculateTypeScale(typeParams);
     const response = `${typeScale.map(step => {
       return `--${typeParams.prefix || 'step'}-${step.step}: ${step.clamp};`
     }).join('\n')}`
-  
+
+    typeScale.some(step => {
+      if (step.wcagViolation) {
+        atRule.warn(
+          result,
+          `WCAG SC 1.4.4 violation for viewports ${step.wcagViolation.from}px to ${step.wcagViolation.to}px.`
+        );
+        return true;
+      }
+      return false;
+    });
+
     atRule.replaceWith(response);
-  
+
     return false;
   }
 
@@ -104,7 +115,7 @@ module.exports = (opts) => {
     });
 
     const spaceScale = calculateSpaceScale(spaceParams);
-    
+
     const response = `${[...spaceScale.sizes, ...spaceScale.oneUpPairs, ...spaceScale.customPairs].map(step => {
       return `--${spaceParams.prefix || 'space'}-${step.label}: ${spaceParams.usePx ? step.clampPx : step.clamp};`
     }).join('\n')}`
@@ -122,7 +133,7 @@ module.exports = (opts) => {
       atRule.remove();
       return false;
     }
-  
+
     const clampsParams = {
       minWidth: config.minWidth,
       maxWidth: config.maxWidth,
@@ -160,19 +171,19 @@ module.exports = (opts) => {
       }
     });
 
-    clampsParams.pairs = clampsParams.pairs.reduce(function(result, value, index, array) {
+    clampsParams.pairs = clampsParams.pairs.reduce(function (pairs, value, index, array) {
       if (index % 2 === 0)
-        result.push(array.slice(index, index + 2));
-      return result;
+      pairs.push(array.slice(index, index + 2));
+      return pairs;
     }, []);
-  
+
     const clampScale = calculateClamps(clampsParams);
     const response = `${clampScale.map(step => {
       return `--${clampsParams.prefix || 'space'}-${step.label}: ${clampsParams.usePx ? step.clampPx : step.clamp};`
-    }).join('\n')}`
-  
+    }).join('\n')}`;
+
     atRule.replaceWith(response);
-  
+
     return false;
   }
 
@@ -180,9 +191,9 @@ module.exports = (opts) => {
     postcssPlugin: 'utopia',
 
     AtRule: {
-      utopia: atRule => {
+      utopia: (atRule, { result }) => {
         if (atRule.params.startsWith('typeScale(')) {
-          return typeScale(atRule);
+          return typeScale(atRule, result);
         }
 
         if (atRule.params.startsWith('spaceScale(')) {
