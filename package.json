@@ -1,6 +1,6 @@
 {
   "name": "postcss-utopia",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "PostCSS plugin to generate fluid typopgraphy and space scales",
   "keywords": [
     "postcss",
