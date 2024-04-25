@@ -48,7 +48,7 @@ module.exports = (opts) => {
       return `--${typeParams.prefix || 'step'}-${step.step}: ${step.clamp};`
     }).join('\n')}`
 
-    typeScale.find(step => {
+    typeScale.some(step => {
       if (step.wcagViolation) {
         atRule.warn(
           result,
@@ -171,16 +171,16 @@ module.exports = (opts) => {
       }
     });
 
-    clampsParams.pairs = clampsParams.pairs.reduce(function (result, value, index, array) {
+    clampsParams.pairs = clampsParams.pairs.reduce(function (pairs, value, index, array) {
       if (index % 2 === 0)
-        result.push(array.slice(index, index + 2));
-      return result;
+      pairs.push(array.slice(index, index + 2));
+      return pairs;
     }, []);
 
     const clampScale = calculateClamps(clampsParams);
     const response = `${clampScale.map(step => {
       return `--${clampsParams.prefix || 'space'}-${step.label}: ${clampsParams.usePx ? step.clampPx : step.clamp};`
-    }).join('\n')}`
+    }).join('\n')}`;
 
     atRule.replaceWith(response);
 
