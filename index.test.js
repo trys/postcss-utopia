@@ -165,6 +165,32 @@ it('generates a set of clamps using supplied values', async () => {
   )
 })
 
+it('generates two sets of clamps', async () => {
+  await run(
+    `.test{ @utopia clamps({
+      minWidth: 320,
+      maxWidth: 768,
+      pairs: [
+        [16, 24],
+      ],
+      prefix: "fluid-sm",
+      usePx: true,
+    });
+  
+    @utopia clamps({
+      minWidth: 768,
+      maxWidth: 1440,
+      pairs: [
+        [24, 96],
+      ],
+      prefix: "fluid-md",
+      usePx: true,
+    }); }`,
+    `.test{--fluid-sm-16-24: clamp(16px, 10.2857px + 1.7857vi, 24px);--fluid-md-24-96: clamp(24px, -58.2857px + 10.7143vi, 96px); }`,
+    {}
+  )
+})
+
 it('generates nothing with empty config on a clamp scale', async () => {
   await run(
     `:root { @utopia clamps(); }`,
