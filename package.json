@@ -18,7 +18,10 @@
   "types": "index.d.ts",
   "author": "Trys Mudford <trysmudford@gmail.com>",
   "license": "MIT",
-  "repository": "trys/postcss-utopia",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/trys/postcss-utopia.git"
+  },
   "peerDependencies": {
     "postcss": "^8.4.33"
   },
