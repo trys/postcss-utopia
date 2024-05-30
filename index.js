@@ -216,7 +216,7 @@ module.exports = (opts) => {
           return
         }
 
-        let [minSize, maxSize, minWidth, maxWidth] = node.nodes.filter(x => x.type === 'word').map(x => x.value);
+        let [minSize, maxSize, minWidth, maxWidth] = node.nodes.filter(x => x.type === 'word').map(x => x.value).map(Number);
         if (!minWidth) minWidth = config.minWidth;
         if (!maxWidth) maxWidth = config.maxWidth;
 

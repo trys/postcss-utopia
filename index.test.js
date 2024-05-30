@@ -241,6 +241,14 @@ it('generates two clamps in shorthand form', async () => {
   )
 })
 
+it('handles values over 100', async () => {
+  await run(
+    `.test{ background: red; padding: utopia.clamp(30, 120); }`,
+    `.test{ background: red; padding: clamp(1.875rem, -0.0815rem + 9.7826vi, 7.5rem); }`,
+    { minWidth: 320, maxWidth: 1240 }
+  )
+})
+
 it('skips native clamp', async () => {
   await run(
     `.test{ background: red; margin: clamp(0.7813rem, 0.7747rem + 0.0326vi, 0.8rem);}`,
